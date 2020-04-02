@@ -5,6 +5,7 @@ import pymorphy2
 # nltk.download('stopwords')
 from nltk.corpus import stopwords
 from collections import Counter
+
 morph = pymorphy2.MorphAnalyzer()
 
 # стоп-слова которые мы считать не будем
@@ -46,6 +47,10 @@ stop_words.extend(
 #
 # print(preprocess(document))
 
+def swap_positions(list, pos1, pos2):
+	list[pos1], list[pos2] = list[pos2], list[pos1]
+	return list
+
 
 class Text:
 
@@ -64,7 +69,7 @@ class Text:
 			wrds_without_inf = []
 			for word in wrds_without:
 				wrds_without_inf.append(morph.parse(word)[0].normal_form)
-			sents.append(Sentence(i, 0, sentences[i], wrds_without_inf))
+			sents.append(Sentence(i, 0, sentences[i], set(wrds_without_inf)))
 			words_for_count.extend(wrds_without_inf)
 			i += 1
 
@@ -76,6 +81,18 @@ class Text:
 
 		self.sentences = sents
 		self.words = words
+
+	def scored_sentences(self):
+		for sent in self.sentences:
+			for word in self.words:
+				if word.word in sent.words:
+					sent.score += word.score
+
+	def sorted_sentences_by_score(self):
+		for i in range(len(self.sentences) - 1):
+			for j in range(len(self.sentences) - i - 1):
+				if self.sentences[j].score < self.sentences[j + 1].score:
+					self.sentences[j], self.sentences[j + 1] = self.sentences[j + 1], self.sentences[j]
 
 
 class Sentence:
@@ -91,7 +108,11 @@ class Word:
 
 	def __init__(self, word, score):
 		self.word = word
-		self.scale = score
+		self.score = score
 
 
 text = Text("test.txt", 100)
+text.scored_sentences()
+text.sorted_sentences_by_score()
+for sent in text.sentences:
+	print(sent.score)
