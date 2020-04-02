@@ -47,18 +47,18 @@ stop_words.extend(
 #
 # print(preprocess(document))
 
-def swap_positions(list, pos1, pos2):
-	list[pos1], list[pos2] = list[pos2], list[pos1]
-	return list
-
-
 class Text:
 
-	def __init__(self, filename, percent):
-		self.filename = filename
-		self.percent = percent
+	def __init__(self, _filename, _percent):
+		_filename_split = filename.split(".")
+		new_filename = ""
+		for i in range(len(_filename_split) - 1):
+			new_filename += _filename_split[i]
 
-		document = open(self.filename, 'r').read()
+		self.filename = new_filename
+		self.percent = _percent
+
+		document = open(_filename, 'r').read()
 		sentences = nltk.sent_tokenize(document)
 		sents = []
 		words_for_count = []
@@ -94,6 +94,27 @@ class Text:
 				if self.sentences[j].score < self.sentences[j + 1].score:
 					self.sentences[j], self.sentences[j + 1] = self.sentences[j + 1], self.sentences[j]
 
+	def referat(self):
+		referat_filename = self.filename + "_referat.txt"
+		referat_file = open(referat_filename, "w")
+		count = (self.percent * len(self.sentences)) / 100
+
+		sentences = []
+		for i in range(int(count)):
+			sentences.append(self.sentences[i])
+
+		for i in range(len(sentences) - 1):
+			for j in range(len(sentences) - i - 1):
+				if sentences[j].position > sentences[j + 1].position:
+					sentences[j], sentences[j + 1] = sentences[j + 1], sentences[j]
+
+		referat = ""
+		for sent in sentences:
+			referat += sent.sentence + "\n"
+
+		referat_file.write(referat)
+		print("Зареферированный текст находится в файле " + referat_filename)
+
 
 class Sentence:
 
@@ -111,8 +132,11 @@ class Word:
 		self.score = score
 
 
-text = Text("test.txt", 100)
+print("Введите имя файла")
+filename = input()
+print("Введите, сколько процентов от исходного текста оставить")
+percent = input()
+text = Text(filename, int(percent))
 text.scored_sentences()
 text.sorted_sentences_by_score()
-for sent in text.sentences:
-	print(sent.score)
+text.referat()
