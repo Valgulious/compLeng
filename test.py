@@ -87,18 +87,18 @@ class Text:
 
 class Sentence:
 
-	def __init__(self, position, score, sentence, words):
-		self.position = position
-		self.score = score
-		self.sentence = sentence
-		self.words = words
+	def __init__(self, _position, _score, _sentence, _words):
+		self.position = _position
+		self.score = _score
+		self.sentence = _sentence
+		self.words = _words
 
 
 class Word:
 
-	def __init__(self, word, score):
-		self.word = word
-		self.score = score
+	def __init__(self, _word, _score):
+		self.word = _word
+		self.score = _score
 
 
 print("Введите имя файла")
