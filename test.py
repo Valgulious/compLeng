@@ -10,10 +10,9 @@ morph = pymorphy2.MorphAnalyzer()
 
 # стоп-слова которые мы считать не будем
 stop_words = stopwords.words('russian')
-print(stop_words)
 # расширим набор дополнительным списком слов
 stop_words.extend(
-	['что', 'это', 'так', 'вот', 'быть', 'как', 'в', '—', 'к', 'на', ',', '«', '»', '.', 'т.д', 'т.п', '!', ':'])
+	['что', 'это', 'так', 'вот', 'быть', 'как', 'в', '—', 'к', 'на', ',', '«', '»', '.', 'т.д', 'т.п', '!', ':', '?'])
 
 
 class Text:
@@ -105,6 +104,9 @@ print("Введите имя файла")
 filename = input()
 print("Введите, сколько процентов от исходного текста оставить")
 percent = input()
+while (int(percent) < 1) or (int(percent) > 100):
+	print("Проценты должны быть в диапазоне от 1 до 100")
+	percent = input()
 text = Text(filename, int(percent))
 text.scored_sentences()
 text.sorted_sentences_by_score()
